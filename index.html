@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" href="./assets/simonIcon.ico" type="image/x-icon">
   <link href="https://fonts.googleapis.com/css2?family=Covered+By+Your+Grace&family=Merriweather:wght@700&family=Staatliches&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="reset.css">
   <link rel="stylesheet" href="./index.css">
@@ -13,9 +14,10 @@
     <h1>Juego Simon</h1>
     <div class="button-container-1">
       <span class="mas">Comenzar</span>
-    <button id='work' type="button" name="Hover">Comenzar</button>
+    <button id='comenzar' type="button" name="Hover">Comenzar</button>
     </div>
-    <h3 class="puntuacion">Puntuación: <span class="puntaje">0</span></h3>
+    <h3 class="puntuacion">Puntuación: <span class="puntuacion" id="span-puntuacion">0</span></h3>
+    <p class="nivel">Nivel: <span class="nivel" id="nivelSpan"></span></p>
   </header>
   <main>
     <section class="section-colores">
@@ -30,6 +32,15 @@
         <p class="tiempo">Tiempo:  <span class="contador-tiempo"></span></p>
     </section>
   </main>
+  <div class="modal-contenedor">
+    <div class="modal-contenido">
+      <h3></h3>
+      <p></p>
+      <div class="modal-div-btn">
+        <button class="modal-btn">Cerrar</button>
+      </div>
+    </div>
+  </div>
   <script src="./index.js"></script>
 </body>
 </html>
