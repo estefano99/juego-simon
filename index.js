@@ -11,32 +11,81 @@ var arrayColores = [0, 1, 2, 3]; //Contiene los colores para mostrarlos de forma
 var secuenciaColores = []; //Va a contener la secuencia de colores.
 var cantidadColores = 2; //Incrementa la cantidad de secuencias.
 var intervalo; //Contiene el setInterval que genera y muestra los colores aleatorios.
-var intervaloTiempo = null;
+var intervaloTiempo = null; //Intervalo de tiempo restante
 var secuenciaReproduciendose = false; // Indica si la secuencia se está reproduciendo
 var sinJugar = false; //Hace que no se muestre el cartel de perdiste al seleccionar un color mientras no se arranco el juego.
 var sonidoClick = new Audio();
-sonidoClick.src = './assets/click.mp3';
+sonidoClick.src = "./assets/click.mp3";
 
 var jugador = {
-  colores : [],
+  colores: [],
   nivel: 1,
   puntaje: 0,
-  tiempoRestante: 3
+  tiempoRestante: 4,
+
+  agregarColor: function(color) {
+    this.colores.push(color);
+  },
+
+  removerColores: function(){
+    this.colores.splice(0);
+  },
+
+  subirNivel: function(){
+    this.nivel++;
+  },
+
+  restaurarNivel: function(){
+    this.nivel = 1;
+  },
+
+  aumentarPuntaje: function(){
+    this.puntaje++;
+  },
+
+  restaurarPuntaje: function(){
+    this.puntaje = 0;
+  },
+
+  actualizarTiempo: function() {
+    this.tiempoRestante = 4;
+  }
 };
 
 var modal = {
-  modalContenedor: document.querySelector('.modal-contenedor'),
-  modalTitulo: document.querySelector('.modal-contenido h3'),
-  modalParrafo: document.querySelector('.modal-contenido p'),
-  btnModal: document.querySelector(".modal-btn")
-}
+  modalContenedor: document.querySelector(".modal-contenedor"),
+  modalTitulo: document.querySelector(".modal-contenido h3"),
+  modalParrafo: document.querySelector(".modal-contenido p"),
+  btnModal: document.querySelector(".modal-btn"),
+
+  activarModal: function(){
+    this.modalContenedor.classList.add("modalActivar");
+  },
+
+  desactivarModal: function(){
+    this.modalContenedor.classList.remove("modalActivar");
+  },
+
+  modificarTituloYParrafo: function(titulo,parrafo){
+    this.modalTitulo.textContent = titulo;
+    this.modalParrafo.textContent = parrafo;
+  },
+
+  agregarClase: function(clase){
+    this.modalTitulo.classList.add(clase);
+  },
+
+  removerClase: function(clase){
+    this.modalTitulo.classList.remove(clase);
+  }
+};
 
 nivelHTML.textContent = jugador.nivel;
 
 //Recorre la lista de colores y le asigna un evento a cada div
 divsColores.forEach(function (color) {
   color.addEventListener("click", function () {
-    var id = color.getAttribute("id"); //Extraigo el id para pasarlo como parametro.
+    var id = color.getAttribute("id");
     feedbackClick(id);
   });
 });
@@ -50,56 +99,65 @@ var feedbackClick = function (color) {
   }
 
   if (color === "verde") {
+    divColor.classList.remove("verde");
     divColor.classList.add("verde-click");
-    jugador.colores.push(0);
+    jugador.agregarColor(0);
     if (sonidoClick.currentTime != 0) {
       sonidoClick.currentTime = 0; // Reiniciar el tiempo del sonido
     }
     sonidoClick.play();
 
-    setTimeout(() => {
+    setTimeout(function () {
       divColor.classList.remove("verde-click");
+      divColor.classList.add("verde");
     }, 300);
   }
 
   if (color === "rojo") {
+    divColor.classList.remove("rojo");
     divColor.classList.add("rojo-click");
-    jugador.colores.push(1);
+    jugador.agregarColor(1);
     if (sonidoClick.currentTime != 0) {
       sonidoClick.currentTime = 0; // Reiniciar el tiempo del sonido
     }
     sonidoClick.play();
 
-    setTimeout(() => {
+    setTimeout(function () {
       divColor.classList.remove("rojo-click");
+      divColor.classList.add("rojo");
     }, 300);
   }
 
   if (color === "amarillo") {
+    divColor.classList.remove("amarillo");
     divColor.classList.add("amarillo-click");
-    jugador.colores.push(2);
+    jugador.agregarColor(2);
     if (sonidoClick.currentTime != 0) {
       sonidoClick.currentTime = 0; // Reiniciar el tiempo del sonido
     }
     sonidoClick.play();
 
-    setTimeout(() => {
+    setTimeout(function () {
       divColor.classList.remove("amarillo-click");
+      divColor.classList.add("amarillo");
     }, 300);
   }
 
   if (color === "azul") {
+    divColor.classList.remove("azul");
     divColor.classList.add("azul-click");
-    jugador.colores.push(3);
+    jugador.agregarColor(3);
     if (sonidoClick.currentTime != 0) {
       sonidoClick.currentTime = 0; // Reiniciar el tiempo del sonido
     }
     sonidoClick.play();
 
-    setTimeout(() => {
+    setTimeout(function () {
       divColor.classList.remove("azul-click");
+      divColor.classList.add("azul");
     }, 300);
   }
+  console.log('jugador: ',jugador.colores)
   comprobarSecuencia(jugador);
 };
 
@@ -107,34 +165,35 @@ var feedbackClick = function (color) {
 var comprobarSecuencia = function (jugador) {
   for (let i = 0; i < jugador.colores.length; i++) {
     if (jugador.colores[jugador.colores.length - 1] === secuenciaColores[jugador.colores.length - 1]) {
-      jugador.puntaje++;
+      jugador.aumentarPuntaje();
       puntajeHTML.textContent = jugador.puntaje;
 
       if (jugador.colores.length === secuenciaColores.length) {
-        modal.modalTitulo.textContent = '¡Nivel superado!';
-        modal.modalParrafo.textContent = 'Sigue así.';
-        modal.modalContenedor.style.display = 'flex';
-        modal.modalTitulo.classList.remove('modalPerdiste');
-        modal.modalTitulo.classList.add('modalNivelSuperado');
-        jugador.nivel++;
+        modal.modificarTituloYParrafo('¡Nivel superado!','Sigue así.');
+        modal.agregarClase('modalNivelSuperado');
+        modal.activarModal();
+        jugador.subirNivel();
         nivelHTML.textContent = jugador.nivel;
-        jugador.colores.splice(0); //Reinicia el arreglo del jugador para el proximo nivel
+        jugador.removerColores();
         mostrarColorAleatorio();
         clearInterval(intervaloTiempo);
         tiempoHTML.textContent = "";
-        jugador.tiempoRestante = 20;
+        jugador.actualizarTiempo();
         var audio = new Audio();
-        audio.src = './assets/siguienteNivel.mp3';
+        audio.src = "./assets/siguienteNivel.mp3";
         audio.play();
-        setTimeout(function() {
-          modal.modalContenedor.style.display = 'none';
+        setTimeout(function () {
+          modal.removerClase('modalNivelSuperado')
+          modal.desactivarModal();
         }, 700);
       }
       return;
     }
     var mensajeTitulo = "Has perdido, color incorrecto.";
-    var mensajeParrafo = 'Nivel: ' + jugador.nivel + ' - Puntuación: ' + jugador.puntaje ;
-    gameOver(mensajeTitulo, mensajeParrafo);
+    var mensajeParrafo =
+      "Nivel: " + jugador.nivel + " - Puntuación: " + jugador.puntaje;
+    modal.modificarTituloYParrafo(mensajeTitulo,mensajeParrafo);
+    gameOver();
     return;
   }
 };
@@ -167,25 +226,31 @@ var mostrarColorAleatorio = function () {
           sonidoClick.currentTime = 0; // Reiniciar el tiempo del sonido
         }
         sonidoClick.play();
-        removerClase(color);
+        setTimeout(function () {
+          divsColores[color].classList.remove("verde-click");
+        }, 600);
       }
-      
+
       if (color === 1) {
         divsColores[1].classList.add("rojo-click");
         if (sonidoClick.currentTime != 0) {
           sonidoClick.currentTime = 0; // Reiniciar el tiempo del sonido
         }
         sonidoClick.play();
-        removerClase(color);
+        setTimeout(function () {
+          divsColores[color].classList.remove("rojo-click");
+        }, 600);
       }
-      
+
       if (color === 2) {
         divsColores[2].classList.add("amarillo-click");
         if (sonidoClick.currentTime != 0) {
           sonidoClick.currentTime = 0; // Reiniciar el tiempo del sonido
         }
         sonidoClick.play();
-        removerClase(color);
+        setTimeout(function () {
+          divsColores[color].classList.remove("amarillo-click");
+        }, 600);
       }
 
       if (color === 3) {
@@ -194,7 +259,9 @@ var mostrarColorAleatorio = function () {
           sonidoClick.currentTime = 0; // Reiniciar el tiempo del sonido
         }
         sonidoClick.play();
-        removerClase(color);
+        setTimeout(function () {
+          divsColores[color].classList.remove("azul-click");
+        }, 600);
       }
 
       // Iniciar el contador de tiempo después de mostrar los colores
@@ -219,8 +286,9 @@ function iniciarContadorTiempo() {
     if (jugador.tiempoRestante <= 0) {
       clearInterval(intervaloTiempo);
       var mensajeTitulo = "Has perdido, se acabó el tiempo.";
-      var mensajeParrafo = 'Nivel: ' + jugador.nivel + ' - Puntuación: ' + jugador.puntaje ;
-      gameOver(mensajeTitulo, mensajeParrafo);
+      var mensajeParrafo = "Nivel: " + jugador.nivel + " - Puntuación: " + jugador.puntaje;
+      modal.modificarTituloYParrafo(mensajeTitulo,mensajeParrafo);
+      gameOver();
       return;
     }
     tiempoHTML.textContent = jugador.tiempoRestante;
@@ -229,40 +297,27 @@ function iniciarContadorTiempo() {
 }
 
 //Se llama cuando erras de color o cuando se termina el tiempo.
-function gameOver(mensajeTitulo, mensajeParrafo) {
-  jugador.nivel = 1;
+function gameOver() {
+  jugador.restaurarNivel();
   nivelHTML.textContent = jugador.nivel;
   divBtnComenzar.classList.remove("disabledBtnComenzar");
   tiempoHTML.textContent = "";
   clearInterval(intervaloTiempo);
-  jugador.colores.splice(0); //Reinicia el arreglo del jugador para el proximo nivel
+  jugador.removerColores();
   secuenciaColores.splice(0);
-  jugador.tiempoRestante = 20;
-  jugador.puntaje = 0;
+  jugador.actualizarTiempo();
+  jugador.restaurarPuntaje();
   puntajeHTML.textContent = jugador.puntaje;
   sinJugar = false;
-  modal.modalTitulo.textContent = mensajeTitulo;
-  modal.modalParrafo.textContent = mensajeParrafo;
-  modal.modalContenedor.style.display = 'flex';
-  modal.modalTitulo.classList.remove('modalNivelSuperado');
-  modal.modalTitulo.classList.add('modalPerdiste');
+  // modal.modificarTituloYParrafo(mensajeTitulo,mensajeParrafo);
+  modal.activarModal();
+  modal.agregarClase('modalPerdiste');
   var audioPerdiste = new Audio();
-  audioPerdiste.src = './assets/perdiste.mp3';
+  audioPerdiste.src = "./assets/perdiste.mp3";
   audioPerdiste.play();
 }
 
-//Remueve el color activado en el HTML
-function removerClase(color) {
-  setTimeout(() => {
-    divsColores[color].classList.remove(
-      "verde-click",
-      "rojo-click",
-      "azul-click",
-      "amarillo-click"
-    );
-  }, 600);
-}
-
 modal.btnModal.addEventListener("click", function () {
-  modal.modalContenedor.style.display = "none";
+  modal.removerClase('modalPerdiste');
+  modal.desactivarModal();
 });
