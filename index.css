@@ -169,6 +169,8 @@ h1{
   color: #ffffff;
 }
 
+/* Modal mensajes de perdiste o pasaste de nivel */
+
 .modal-contenedor{
   display: none;
   justify-content: center;
@@ -235,6 +237,63 @@ h1{
   display: flex;
   font-weight: bold;
   color: #db2023;
+}
+
+/* Modal Nombre */
+.modal-registrar-nombre{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  width: 100%;
+  height: 100vh;
+  z-index: 100;
+  top: 0;
+  left: 0;
+  background-color: rgba(144, 148, 150, 0.8);
+}
+
+.modal-registrar-nombre .modal-contenido{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 400px;
+  padding: 20px;
+  border-radius: 4px;
+  background-color: #ffffff;
+}
+
+.modal-contenido label{
+  display: block;
+  margin-bottom: 15px;
+  font-family: 'Merriweather', serif;
+}
+.modal-contenido input{
+  display: block;
+  padding: 5px;
+  border-radius: 10px;
+  border: 2px solid #000000;
+  background-color: #dbd7d7;
+}
+
+.modalDesactivar{
+  display: none;
+}
+
+.modal-span{
+  display: none;
+}
+
+.modal-span-activado{
+  display: block;
+  margin-top: 10px;
+  padding: 5px;
+  border-radius: 5px;
+  background-color: #ca0505;
+  color: #ffffff;
+  font-weight: bold;
 }
 
 @keyframes ani {

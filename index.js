@@ -1,27 +1,34 @@
 //Selectores
 var divsColores = document.querySelectorAll(".divs-colores");
 var nivelHTML = document.querySelector("#nivelSpan");
-var divBtnComenzar = document.querySelector(".button-container-1"); //Div que contiene al boton
+var divBtnComenzar = document.querySelector(".button-container-1");
 var btnComenzar = document.querySelector("#comenzar");
 var tiempoHTML = document.querySelector(".contador-tiempo");
 var puntajeHTML = document.querySelector("#span-puntuacion");
+var modalRegistrarNombre = document.querySelector(".modal-registrar-nombre");
+var desactivarModalNombre = document.querySelector(".btn-modal-registrar-nombre");
+var modalMensajeError = document.querySelector(".modal-span");
 
 //Variables que no son selectores
 var arrayColores = [0, 1, 2, 3]; //Contiene los colores para mostrarlos de forma aleatoria.
 var secuenciaColores = []; //Va a contener la secuencia de colores.
 var cantidadColores = 2; //Incrementa la cantidad de secuencias.
-var intervalo; //Contiene el setInterval que genera y muestra los colores aleatorios.
+var intervalo = null; //Contiene el setInterval que genera y muestra los colores aleatorios.
 var intervaloTiempo = null; //Intervalo de tiempo restante
 var secuenciaReproduciendose = false; // Indica si la secuencia se está reproduciendo
 var sinJugar = false; //Hace que no se muestre el cartel de perdiste al seleccionar un color mientras no se arranco el juego.
 var sonidoClick = new Audio();
 sonidoClick.src = "./assets/click.mp3";
+var audioPerdiste = new Audio();
+audioPerdiste.src = "./assets/perdiste.mp3";
+var audioSiguienteNivel = new Audio();
+audioSiguienteNivel.src = "./assets/siguienteNivel.mp3";
 
 var jugador = {
   colores: [],
   nivel: 1,
   puntaje: 0,
-  tiempoRestante: 4,
+  tiempoRestante: 20,
 
   agregarColor: function(color) {
     this.colores.push(color);
@@ -48,7 +55,7 @@ var jugador = {
   },
 
   actualizarTiempo: function() {
-    this.tiempoRestante = 4;
+    this.tiempoRestante = 20;
   }
 };
 
@@ -179,9 +186,7 @@ var comprobarSecuencia = function (jugador) {
         clearInterval(intervaloTiempo);
         tiempoHTML.textContent = "";
         jugador.actualizarTiempo();
-        var audio = new Audio();
-        audio.src = "./assets/siguienteNivel.mp3";
-        audio.play();
+        audioSiguienteNivel.play();
         setTimeout(function () {
           modal.removerClase('modalNivelSuperado')
           modal.desactivarModal();
@@ -190,10 +195,10 @@ var comprobarSecuencia = function (jugador) {
       return;
     }
     var mensajeTitulo = "Has perdido, color incorrecto.";
-    var mensajeParrafo =
-      "Nivel: " + jugador.nivel + " - Puntuación: " + jugador.puntaje;
+    var mensajeParrafo = "Nivel: " + jugador.nivel;
+    mensajeParrafo += " - Puntuación: " + jugador.puntaje;
     modal.modificarTituloYParrafo(mensajeTitulo,mensajeParrafo);
-    gameOver();
+    perdiste();
     return;
   }
 };
@@ -288,7 +293,7 @@ function iniciarContadorTiempo() {
       var mensajeTitulo = "Has perdido, se acabó el tiempo.";
       var mensajeParrafo = "Nivel: " + jugador.nivel + " - Puntuación: " + jugador.puntaje;
       modal.modificarTituloYParrafo(mensajeTitulo,mensajeParrafo);
-      gameOver();
+      perdiste();
       return;
     }
     tiempoHTML.textContent = jugador.tiempoRestante;
@@ -297,7 +302,7 @@ function iniciarContadorTiempo() {
 }
 
 //Se llama cuando erras de color o cuando se termina el tiempo.
-function gameOver() {
+function perdiste() {
   jugador.restaurarNivel();
   nivelHTML.textContent = jugador.nivel;
   divBtnComenzar.classList.remove("disabledBtnComenzar");
@@ -309,15 +314,30 @@ function gameOver() {
   jugador.restaurarPuntaje();
   puntajeHTML.textContent = jugador.puntaje;
   sinJugar = false;
-  // modal.modificarTituloYParrafo(mensajeTitulo,mensajeParrafo);
   modal.activarModal();
   modal.agregarClase('modalPerdiste');
-  var audioPerdiste = new Audio();
-  audioPerdiste.src = "./assets/perdiste.mp3";
   audioPerdiste.play();
 }
 
+//Modal perdiste y ganaste
 modal.btnModal.addEventListener("click", function () {
-  modal.removerClase('modalPerdiste');
+  modal.removerClase("modalPerdiste");
   modal.desactivarModal();
 });
+
+//Modal para tomar el nombre
+desactivarModalNombre.addEventListener("click", function () {
+  var nombre = document.querySelector("#nombre").value;
+
+  if (nombre.length < 3) {
+    modalMensajeError.classList.add("modal-span-activado");
+    modalMensajeError.classList.remove("modal-span");
+    setTimeout(function () {
+      modalMensajeError.classList.add("modal-span");
+      modalMensajeError.classList.remove("modal-span-activado");
+    }, 2000);
+    return;
+  }
+  modalRegistrarNombre.classList.remove("modal-registrar-nombre");
+  modalRegistrarNombre.classList.add("modalDesactivar");
+})
