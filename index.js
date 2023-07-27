@@ -29,6 +29,7 @@ var jugador = {
   nivel: 1,
   puntaje: 0,
   tiempoRestante: 20,
+  acumularTiempo: 0, //Acumula el tiempo y se lo resta al puntaje final
 
   agregarColor: function(color) {
     this.colores.push(color);
@@ -47,15 +48,31 @@ var jugador = {
   },
 
   aumentarPuntaje: function(){
-    this.puntaje++;
+    this.puntaje += 10;
   },
 
   restaurarPuntaje: function(){
     this.puntaje = 0;
   },
 
+  restarTiempo: function () {
+    this.tiempoRestante--;
+  },
+
   actualizarTiempo: function() {
     this.tiempoRestante = 20;
+  },
+
+  acumularTiempoMetodo: function () {
+    this.acumularTiempo += 1;
+  },
+
+  restaurarAcumuladorTiempo: function () {
+    this.acumularTiempo = 0;
+  },
+
+  calcularPuntajeFinal: function () {
+    this.puntaje = this.puntaje - this.acumularTiempo;
   }
 };
 
@@ -166,7 +183,7 @@ var feedbackClick = function (color) {
   }
   comprobarSecuencia(jugador);
 };
-
+var calcularPuntaje = 0;
 //Comprueba que coincida el color seleccionado del jugador con el del arreglo de colores.
 var comprobarSecuencia = function (jugador) {
   for (var i = 0; i < jugador.colores.length; i++) {
@@ -193,9 +210,11 @@ var comprobarSecuencia = function (jugador) {
       }
       return;
     }
+    jugador.calcularPuntajeFinal(); //Resta el tiempo al puntaje
+    jugador.restaurarAcumuladorTiempo();
     var mensajeTitulo = "Has perdido, color incorrecto.";
     var mensajeParrafo = "Nivel: " + jugador.nivel;
-    mensajeParrafo += " - Puntuación: " + jugador.puntaje;
+    mensajeParrafo += " - Puntuación final: " + jugador.puntaje;
     modal.modificarTituloYParrafo(mensajeTitulo,mensajeParrafo);
     perdiste();
     return;
@@ -287,14 +306,17 @@ function iniciarContadorTiempo() {
   intervaloTiempo = setInterval(function () {
     if (jugador.tiempoRestante <= 0) {
       clearInterval(intervaloTiempo);
+      jugador.calcularPuntajeFinal(); //Resta el tiempo al puntaje
+      jugador.restaurarAcumuladorTiempo();
       var mensajeTitulo = "Has perdido, se acabó el tiempo.";
-      var mensajeParrafo = "Nivel: " + jugador.nivel + " - Puntuación: " + jugador.puntaje;
+      var mensajeParrafo = "Nivel: " + jugador.nivel + " - Puntuación final: " + jugador.puntaje;
       modal.modificarTituloYParrafo(mensajeTitulo,mensajeParrafo);
       perdiste();
       return;
     }
     tiempoHTML.textContent = jugador.tiempoRestante;
-    jugador.tiempoRestante--;
+    jugador.restarTiempo();
+    jugador.acumularTiempoMetodo();
   }, 1000); // Intervalo de 1 segundo
 }
 
