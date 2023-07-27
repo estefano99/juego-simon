@@ -1,8 +1,8 @@
 //Selectores
 var divsColores = document.querySelectorAll(".divs-colores");
 var nivelHTML = document.querySelector("#nivelSpan");
-var divBtnComenzar = document.querySelector(".button-container-1");
-var btnComenzar = document.querySelector("#comenzar");
+var divBtnComenzar = document.querySelector(".header-div-btn");
+var btnComenzar = document.querySelector("#btn-comenzar");
 var tiempoHTML = document.querySelector(".contador-tiempo");
 var puntajeHTML = document.querySelector("#span-puntuacion");
 var modalRegistrarNombre = document.querySelector(".modal-registrar-nombre");
@@ -11,12 +11,12 @@ var modalMensajeError = document.querySelector(".modal-span");
 
 //Variables que no son selectores
 var arrayColores = [0, 1, 2, 3]; //Contiene los colores para mostrarlos de forma aleatoria.
-var secuenciaColores = []; //Va a contener la secuencia de colores.
+var secuenciaColores = [];
 var cantidadColores = 2; //Incrementa la cantidad de secuencias.
 var intervalo = null; //Contiene el setInterval que genera y muestra los colores aleatorios.
 var intervaloTiempo = null; //Intervalo de tiempo restante
-var secuenciaReproduciendose = false; // Indica si la secuencia se está reproduciendo
-var sinJugar = false; //Hace que no se muestre el cartel de perdiste al seleccionar un color mientras no se arranco el juego.
+var secuenciaReproduciendose = false; // Que no se pueda clickear mientras se esta mostrando la secuencia de colores.
+var sinJugar = false; //Comprueba que no se pueda hacer click mientras no se arranco la partida.
 var sonidoClick = new Audio();
 sonidoClick.src = "./assets/click.mp3";
 var audioPerdiste = new Audio();
@@ -164,13 +164,12 @@ var feedbackClick = function (color) {
       divColor.classList.add("azul");
     }, 300);
   }
-  console.log('jugador: ',jugador.colores)
   comprobarSecuencia(jugador);
 };
 
 //Comprueba que coincida el color seleccionado del jugador con el del arreglo de colores.
 var comprobarSecuencia = function (jugador) {
-  for (let i = 0; i < jugador.colores.length; i++) {
+  for (var i = 0; i < jugador.colores.length; i++) {
     if (jugador.colores[jugador.colores.length - 1] === secuenciaColores[jugador.colores.length - 1]) {
       jugador.aumentarPuntaje();
       puntajeHTML.textContent = jugador.puntaje;
@@ -216,8 +215,6 @@ var mostrarColorAleatorio = function () {
   generarColorAleatorio();
 
   clearInterval(intervalo);
-
-  console.log(secuenciaColores);
 
   secuenciaReproduciendose = true;
   sinJugar = true;
