@@ -6,7 +6,7 @@ var btnComenzar = document.querySelector("#btn-comenzar");
 var tiempoHTML = document.querySelector(".contador-tiempo");
 var puntajeHTML = document.querySelector("#span-puntuacion");
 var modalRegistrarNombre = document.querySelector(".modal-registrar-nombre");
-var desactivarModalNombre = document.querySelector(".btn-modal-registrar-nombre");
+var btnModalNombre= document.querySelector(".btn-modal-registrar-nombre");
 var modalMensajeError = document.querySelector(".modal-span");
 
 //Variables que no son selectores
@@ -25,33 +25,34 @@ var audioSiguienteNivel = new Audio();
 audioSiguienteNivel.src = "./assets/siguienteNivel.mp3";
 
 var jugador = {
+  nombre: "",
   colores: [],
   nivel: 1,
   puntaje: 0,
   tiempoRestante: 20,
   acumularTiempo: 0, //Acumula el tiempo y se lo resta al puntaje final
 
-  agregarColor: function(color) {
+  agregarColor: function (color) {
     this.colores.push(color);
   },
 
-  removerColores: function(){
+  removerColores: function (){
     this.colores.splice(0);
   },
 
-  subirNivel: function(){
+  subirNivel: function (){
     this.nivel++;
   },
 
-  restaurarNivel: function(){
+  restaurarNivel: function (){
     this.nivel = 1;
   },
 
-  aumentarPuntaje: function(){
+  aumentarPuntaje: function (){
     this.puntaje += 10;
   },
 
-  restaurarPuntaje: function(){
+  restaurarPuntaje: function (){
     this.puntaje = 0;
   },
 
@@ -73,6 +74,9 @@ var jugador = {
 
   calcularPuntajeFinal: function () {
     this.puntaje = this.puntaje - this.acumularTiempo;
+    if (this.puntaje < 0) {
+      this.puntaje = 0;
+    }
   }
 };
 
@@ -82,24 +86,24 @@ var modal = {
   modalParrafo: document.querySelector(".modal-contenido p"),
   btnModal: document.querySelector(".modal-btn"),
 
-  activarModal: function(){
+  activarModal: function (){
     this.modalContenedor.classList.add("modalActivar");
   },
 
-  desactivarModal: function(){
+  desactivarModal: function (){
     this.modalContenedor.classList.remove("modalActivar");
   },
 
-  modificarTituloYParrafo: function(titulo,parrafo){
+  modificarTituloYParrafo: function (titulo,parrafo){
     this.modalTitulo.textContent = titulo;
     this.modalParrafo.textContent = parrafo;
   },
 
-  agregarClase: function(clase){
+  agregarClase: function (clase){
     this.modalTitulo.classList.add(clase);
   },
 
-  removerClase: function(clase){
+  removerClase: function (clase){
     this.modalTitulo.classList.remove(clase);
   }
 };
@@ -295,14 +299,14 @@ var mostrarColorAleatorio = function () {
 };
 
 //Genera los colores aleatorios
-function generarColorAleatorio() {
+function generarColorAleatorio () {
   for (var i = 0; i < cantidadColores; i++) {
     var aleatorio = Math.floor(Math.random() * arrayColores.length); //Contiene la posicion aleatoria entre 0 y 3
     secuenciaColores.push(arrayColores[aleatorio]);
   }
 }
 
-function iniciarContadorTiempo() {
+function iniciarContadorTiempo () {
   intervaloTiempo = setInterval(function () {
     if (jugador.tiempoRestante <= 0) {
       clearInterval(intervaloTiempo);
@@ -321,7 +325,8 @@ function iniciarContadorTiempo() {
 }
 
 //Se llama cuando erras de color o cuando se termina el tiempo.
-function perdiste() {
+function perdiste () {
+  guardarLocalStorage(jugador.nombre, jugador.puntaje, jugador.nivel);
   jugador.restaurarNivel();
   nivelHTML.textContent = jugador.nivel;
   divBtnComenzar.classList.remove("disabledBtnComenzar");
@@ -345,7 +350,7 @@ modal.btnModal.addEventListener("click", function () {
 });
 
 //Modal para tomar el nombre
-desactivarModalNombre.addEventListener("click", function () {
+btnModalNombre.addEventListener("click", function () {
   var nombre = document.querySelector("#nombre").value;
 
   if (nombre.length < 3) {
@@ -359,4 +364,15 @@ desactivarModalNombre.addEventListener("click", function () {
   }
   modalRegistrarNombre.classList.remove("modal-registrar-nombre");
   modalRegistrarNombre.classList.add("modalDesactivar");
+  jugador.nombre = nombre;
 })
+
+var guardarLocalStorage = function (nombre, puntaje, nivel) {
+  var resultadosPrevios = localStorage.getItem("resultados") ? JSON.parse(localStorage.getItem("resultados")) : []; //Si tiene algo el Storage lo trae, sino genera un array vacio.
+  var fecha = new Date().toLocaleDateString();
+  console.log(fecha)
+  var resultados = { nombre, puntaje, nivel, fecha };
+  console.log(resultados)
+  resultadosPrevios.push(resultados);
+  localStorage.setItem("resultados",JSON.stringify(resultadosPrevios));
+}
