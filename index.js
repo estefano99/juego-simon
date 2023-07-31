@@ -370,9 +370,7 @@ btnModalNombre.addEventListener("click", function () {
 var guardarLocalStorage = function (nombre, puntaje, nivel) {
   var resultadosPrevios = localStorage.getItem("resultados") ? JSON.parse(localStorage.getItem("resultados")) : []; //Si tiene algo el Storage lo trae, sino genera un array vacio.
   var fecha = new Date().toLocaleDateString();
-  console.log(fecha)
   var resultados = { nombre, puntaje, nivel, fecha };
-  console.log(resultados)
   resultadosPrevios.push(resultados);
   localStorage.setItem("resultados",JSON.stringify(resultadosPrevios));
 }
